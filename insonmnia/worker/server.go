@@ -31,7 +31,7 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	sshd "github.com/gliderlabs/ssh"
 	"github.com/gogo/protobuf/proto"
-	"github.com/grpc-ecosystem/go-grpc-prometheus"
+	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	log "github.com/noxiouz/zapctx/ctxlog"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/oschwald/geoip2-golang"
@@ -54,7 +54,7 @@ import (
 	"github.com/sonm-io/core/insonmnia/worker/plugin"
 	"github.com/sonm-io/core/insonmnia/worker/salesman"
 	"github.com/sonm-io/core/insonmnia/worker/volume"
-	"github.com/sonm-io/core/proto"
+	sonm "github.com/sonm-io/core/proto"
 	"github.com/sonm-io/core/util"
 	"github.com/sonm-io/core/util/debug"
 	"github.com/sonm-io/core/util/defergroup"
@@ -1164,10 +1164,10 @@ func (m *Worker) StartTask(ctx context.Context, request *sonm.StartTaskRequest) 
 		return nil, fmt.Errorf("failed to parse SSH public key: %v", err)
 	}
 
-	network, err := m.salesman.Network(ask.ID)
-	if err != nil {
-		return nil, err
-	}
+	// network, err := m.salesman.Network(ask.ID)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	if err != nil {
 		return nil, status.Errorf(codes.Unauthenticated, "invalid public key provided %v", err)
@@ -1223,17 +1223,17 @@ func (m *Worker) StartTask(ctx context.Context, request *sonm.StartTaskRequest) 
 	}
 
 	var d = Description{
-		Container:      *request.Spec.Container,
-		Reference:      ref,
-		Auth:           spec.Registry.Auth(),
-		CGroupParent:   cgroup.Suffix(),
-		Resources:      spec.Resources,
-		DealId:         request.GetDealID().Unwrap().String(),
-		TaskId:         taskID,
-		GPUDevices:     gpuids,
-		mounts:         mounts,
-		NetworkOptions: network,
-		NetworkSpecs:   networks,
+		Container:    *request.Spec.Container,
+		Reference:    ref,
+		Auth:         spec.Registry.Auth(),
+		CGroupParent: cgroup.Suffix(),
+		Resources:    spec.Resources,
+		DealId:       request.GetDealID().Unwrap().String(),
+		TaskId:       taskID,
+		GPUDevices:   gpuids,
+		mounts:       mounts,
+		// NetworkOptions: network,
+		NetworkSpecs: networks,
 	}
 
 	// TODO: Detect whether it's the first time allocation. If so - release resources on error.
